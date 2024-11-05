@@ -12,3 +12,10 @@ public enum GameDifficulty
     Medium,
     Hard
 }
+
+public enum CardState
+{
+    Hidden,
+    Revealed,
+    Matched
+}

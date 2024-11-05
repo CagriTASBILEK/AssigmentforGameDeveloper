@@ -14,6 +14,8 @@ public class GameUIViewModel : MonoBehaviour
     public event Action OnInitialized;
     
     public GameConfig.GridConfig[] DifficultyConfigs => model.GameConfig.gridConfigs;
+    public int HighScore => model?.HighScore ?? 0;
+    public int TotalScore => model?.TotalScore ?? 0;
     
     public GameDifficulty SelectedDifficulty
     {
@@ -26,7 +28,6 @@ public class GameUIViewModel : MonoBehaviour
     }
     private IEnumerator InitializeWhenReady()
     {
-       
         while (GameManager.Instance == null || GameManager.Instance.Config == null)
         {
             yield return new WaitForSeconds(0.5f);

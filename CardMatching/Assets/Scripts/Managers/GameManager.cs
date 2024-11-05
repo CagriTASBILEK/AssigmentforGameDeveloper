@@ -229,6 +229,11 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.UpdateScores(currentScore);
+        }
+        
         DebugLog($"Game Over! Final Score: {currentScore}");
     }
 
@@ -295,4 +300,20 @@ public class GameManager : MonoBehaviour
     public int GetCurrentScore() => currentScore;
     public int GetCurrentCombo() => currentCombo;
     public GameDifficulty GetCurrentDifficulty() => currentDifficulty;
+    
+    [Header("Debug Buttons")]
+    [SerializeField] private bool resetScores;
+
+    private void OnValidate()
+    {
+        if (resetScores)
+        {
+            resetScores = false;
+            if (SaveManager.Instance != null)
+            {
+                SaveManager.Instance.ResetScores();
+                Debug.Log("All scores have been reset!");
+            }
+        }
+    }
 }

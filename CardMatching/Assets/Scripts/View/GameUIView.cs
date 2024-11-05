@@ -17,6 +17,8 @@ public class GameUIView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI comboText;
     [SerializeField] private TMP_Dropdown difficultyDropdown;
     [SerializeField] private TextMeshProUGUI finalScoreText;
+    [SerializeField] private TextMeshProUGUI highScoreText;
+    [SerializeField] private TextMeshProUGUI totalScoreText;
 
     [Header("Buttons")]
     [SerializeField] private Button startGameButton;
@@ -37,8 +39,8 @@ public class GameUIView : MonoBehaviour
         InitializeUI();
         BindEvents();
         InitializePanels();
+        UpdateScoreTexts();
     }
-
     
     private void InitializePanels()
     {
@@ -84,6 +86,13 @@ public class GameUIView : MonoBehaviour
         viewModel.OnComboUpdated += UpdateCombo;
         viewModel.OnGameStateChanged += UpdateGameState;
         GameEvents.OnGameOver += ShowGameOver;
+        GameEvents.OnGameOver += UpdateScoreTexts; 
+    }
+    
+    private void UpdateScoreTexts()
+    {
+        highScoreText.text = $"High Score: {viewModel.HighScore}";
+        totalScoreText.text = $"Total Point: {viewModel.TotalScore}";
     }
 
     private void OnDifficultyChanged(int index)
@@ -127,6 +136,7 @@ public class GameUIView : MonoBehaviour
         if (state == GameState.MainMenu)
         {
             gameFinishPanel.SetActive(false);
+            UpdateScoreTexts(); 
         }
     }
 
@@ -139,6 +149,7 @@ public class GameUIView : MonoBehaviour
             viewModel.OnComboUpdated -= UpdateCombo;
             viewModel.OnGameStateChanged -= UpdateGameState;
             GameEvents.OnGameOver -= ShowGameOver;
+            GameEvents.OnGameOver -= UpdateScoreTexts;
         }
     }
 }

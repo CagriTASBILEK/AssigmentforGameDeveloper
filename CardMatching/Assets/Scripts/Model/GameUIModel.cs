@@ -5,12 +5,16 @@ public class GameUIModel
     private int currentCombo;
     private GameState currentGameState;
     private GameDifficulty currentDifficulty;
+    private int highScore;
+    private int totalScore;
 
     public GameConfig GameConfig => gameConfig;
     public int CurrentScore => currentScore;
     public int CurrentCombo => currentCombo;
     public GameState CurrentGameState => currentGameState;
     public GameDifficulty CurrentDifficulty => currentDifficulty;
+    public int HighScore => highScore;
+    public int TotalScore => totalScore;
 
     public bool Initialize()
     {
@@ -22,6 +26,10 @@ public class GameUIModel
         gameConfig = GameManager.Instance.Config;
         currentDifficulty = GameDifficulty.Easy;
         currentGameState = GameState.MainMenu;
+        
+        highScore = SaveManager.Instance.GetHighScore();
+        totalScore = SaveManager.Instance.GetTotalScore();
+        
         SubscribeToEvents();
         return true;
     }
@@ -36,6 +44,11 @@ public class GameUIModel
     private void UpdateScore(int score)
     {
         currentScore = score;
+        if (currentGameState == GameState.GameOver)
+        {
+            highScore = SaveManager.Instance.GetHighScore();
+            totalScore = SaveManager.Instance.GetTotalScore();
+        }
     }
 
     private void UpdateCombo(int combo)

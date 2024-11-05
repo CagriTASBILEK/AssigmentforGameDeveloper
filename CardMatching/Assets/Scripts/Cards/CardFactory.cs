@@ -68,32 +68,33 @@ public class CardFactory : MonoBehaviour
 
     private CardData[] SelectRandomPairs(int pairCount)
     {
-        if (pairCount > availableCards.Length)
+        if (availableCards == null || availableCards.Length == 0)
         {
-            Debug.LogError(
-                $"Not enough card types! Requested {pairCount} pairs but only have {availableCards.Length} types.");
+            Debug.LogError("No card types available!");
             return null;
         }
 
         CardData[] selectedCards = new CardData[pairCount * 2];
-        bool[] usedIndices = new bool[availableCards.Length];
-        int selectedPairs = 0;
         System.Random random = new System.Random();
-
-        while (selectedPairs < pairCount)
+        
+        int currentIndex = 0;
+        for (int i = 0; i < availableCards.Length && currentIndex < pairCount; i++)
+        {
+            selectedCards[currentIndex * 2] = availableCards[i];
+            selectedCards[currentIndex * 2 + 1] = availableCards[i];
+            currentIndex++;
+        }
+        
+        for (int i = currentIndex; i < pairCount; i++)
         {
             int randomIndex = random.Next(0, availableCards.Length);
+            CardData randomCard = availableCards[randomIndex];
 
-            if (!usedIndices[randomIndex])
-            {
-                selectedCards[selectedPairs * 2] = availableCards[randomIndex];
-                selectedCards[selectedPairs * 2 + 1] = availableCards[randomIndex];
-                usedIndices[randomIndex] = true;
-                selectedPairs++;
-            }
+            selectedCards[i * 2] = randomCard;
+            selectedCards[i * 2 + 1] = randomCard;
         }
 
-
+        
         for (int i = selectedCards.Length - 1; i > 0; i--)
         {
             int j = random.Next(i + 1);

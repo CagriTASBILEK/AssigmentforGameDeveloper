@@ -38,21 +38,43 @@ public class CardSpawner : MonoBehaviour
 
     private void PositionCards(Card[] cards, GameConfig.GridConfig gridConfig)
     {
-        if (cards == null) return;
-
-        float startX = -(gridConfig.columns - 1) * gridConfig.cardSpacing * 0.5f;
-        float startY = (gridConfig.rows - 1) * gridConfig.cardSpacing * 0.5f;
-
-        for (int i = 0; i < cards.Length; i++)
+        int rows = gridConfig.rows;
+        int columns = gridConfig.columns;
+        float cardSpacing = gridConfig.cardSpacing; 
+        
+        float gridCenterX = (columns - 1) * cardSpacing / 2f;
+        float gridCenterY = (rows - 1) * cardSpacing / 2f;
+        
+        for (int row = 0; row < rows; row++)
         {
-            int row = i / gridConfig.columns;
-            int col = i % gridConfig.columns;
+            for (int col = 0; col < columns; col++)
+            {
+                int index = row * columns + col;
+                if (index >= cards.Length) break; 
+                
+                Vector3 cardPosition = new Vector3(
+                    col * cardSpacing - gridCenterX,
+                    row * cardSpacing - gridCenterY,
+                    0
+                );
 
-            float xPos = startX + (col * gridConfig.cardSpacing);
-            float yPos = startY - (row * gridConfig.cardSpacing);
-            
-            cards[i].transform.position = new Vector3(xPos, yPos, 0);
-            cards[i].gameObject.SetActive(true);
+                cards[index].transform.position = cardPosition;
+                cards[index].gameObject.SetActive(true);
+            }
+        }
+        CenterCameraOnGrid(rows, columns, cardSpacing);
+    }
+    private void CenterCameraOnGrid(int rows, int columns, float cardSpacing)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera.orthographic)
+        {
+            float aspectRatio = (float)Screen.width / Screen.height;
+            mainCamera.orthographicSize = Mathf.Max(rows * cardSpacing / 2, columns * cardSpacing / (2 * aspectRatio));
+        }
+        else
+        {
+            mainCamera.transform.position = new Vector3(0, 0, -10);
         }
     }
 

@@ -96,14 +96,16 @@ public class GameManager : MonoBehaviour
         {
             StartGame(GameDifficulty.Easy);
         }
-
         if (Input.GetKey(KeyCode.B))
         {
             StartGame(GameDifficulty.Medium);
         }
+        if (Input.GetKey(KeyCode.C))
+        {
+            StartGame(GameDifficulty.Hard);
+        }
     }
-
-
+    
     private void HandleCardSelection(Card selectedCard)
     {
         if (currentGameState != GameState.Playing || isProcessingMatch)

@@ -11,6 +11,12 @@ public class GameConfig : ScriptableObject
         public int rows;
         public int columns;
         public float cardSpacing = 1.2f;
+        
+        public bool IsValid()
+        {
+            int totalCards = rows * columns;
+            return totalCards % 2 == 0; 
+        }
     }
 
     [Header("Grid Settings")]
@@ -22,11 +28,18 @@ public class GameConfig : ScriptableObject
     public float maxComboTime = 5f;
     public GridConfig GetGridConfig(GameDifficulty difficulty)
     {
-        for(int i = 0; i < gridConfigs.Length; i++)
+        for (int i = 0; i < gridConfigs.Length; i++)
         {
-            if(gridConfigs[i].difficulty == difficulty)
+            if (gridConfigs[i].difficulty == difficulty)
+            {
+                if (!gridConfigs[i].IsValid())
+                {
+                    Debug.LogError($"GridConfig for difficulty {difficulty} is invalid! Rows: {gridConfigs[i].rows}, Columns: {gridConfigs[i].columns}");
+                    return null;
+                }
                 return gridConfigs[i];
+            }
         }
-        return gridConfigs[0];
+        return gridConfigs[0]; 
     }
 }

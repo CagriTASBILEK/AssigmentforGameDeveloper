@@ -16,15 +16,15 @@ MonoBehaviour:
   - difficulty: 0
     rows: 2
     columns: 2
-    cardSpacing: 1
+    cardSpacing: 55
   - difficulty: 1
     rows: 4
     columns: 4
-    cardSpacing: 1
+    cardSpacing: 55
   - difficulty: 2
     rows: 7
     columns: 6
-    cardSpacing: 1
+    cardSpacing: 55
   cardFlipDuration: 0.3
   matchCheckDelay: 1
   baseScore: 100

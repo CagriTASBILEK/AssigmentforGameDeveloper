@@ -37,13 +37,13 @@ public class CardFactory : MonoBehaviour
 
     private void InitializePool()
     {
-        int maxPoolSize = 64;
+        int maxPoolSize = 100;
         cardPool = new ObjectPool<Card>(cardPrefab, maxPoolSize, cardContainer);
     }
 
     public Card[] CreateCards(int pairCount)
     {
-        if (pairCount * 2 > 36)
+        if (pairCount * 2 > 100)
         {
             Debug.LogError("Requested pair count exceeds maximum pool size!");
             return null;

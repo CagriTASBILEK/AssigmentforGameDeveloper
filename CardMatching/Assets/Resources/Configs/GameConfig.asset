@@ -13,17 +13,40 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: 
   gridConfigs:
-  - difficulty: 0
+  - difficultyName: EasyMode1
+    difficulty: 0
     rows: 2
     columns: 2
     cardSpacing: 55
-  - difficulty: 1
+  - difficultyName: EasyMode2
+    difficulty: 0
+    rows: 3
+    columns: 2
+    cardSpacing: 55
+  - difficultyName: EasyMode3
+    difficulty: 0
+    rows: 8
+    columns: 2
+    cardSpacing: 55
+  - difficultyName: MediumMode1
+    difficulty: 1
     rows: 4
     columns: 4
     cardSpacing: 55
-  - difficulty: 2
+  - difficultyName: MediumMode2
+    difficulty: 1
+    rows: 5
+    columns: 6
+    cardSpacing: 55
+  - difficultyName: HardMode1
+    difficulty: 2
     rows: 7
     columns: 6
+    cardSpacing: 55
+  - difficultyName: HardMode2
+    difficulty: 2
+    rows: 8
+    columns: 8
     cardSpacing: 55
   cardFlipDuration: 0.3
   matchCheckDelay: 1

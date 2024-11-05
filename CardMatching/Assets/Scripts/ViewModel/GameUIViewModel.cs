@@ -17,10 +17,17 @@ public class GameUIViewModel : MonoBehaviour
     public int HighScore => model?.HighScore ?? 0;
     public int TotalScore => model?.TotalScore ?? 0;
     
-    public GameDifficulty SelectedDifficulty
+    private string selectedDifficultyName;
+    private GameDifficulty selectedDifficulty;
+    
+    public void SetSelectedDifficulty(string difficultyName)
     {
-        get => model?.CurrentDifficulty ?? GameDifficulty.Easy;
-        set { if (model != null) model.SetDifficulty(value); }
+        selectedDifficultyName = difficultyName;
+        var config = model?.GameConfig.GetGridConfig(difficultyName);
+        if (config != null)
+        {
+            selectedDifficulty = config.difficulty;
+        }
     }
     private void Start()
     {
@@ -46,8 +53,6 @@ public class GameUIViewModel : MonoBehaviour
             Debug.LogError("Failed to initialize GameUIModel");
         }
     }
-    
-    
 
     private void SubscribeToEvents()
     {
@@ -58,14 +63,14 @@ public class GameUIViewModel : MonoBehaviour
 
     public string GetDifficultyText(GameConfig.GridConfig config)
     {
-        return model.GetDifficultyDescription(config);
+        return config.difficultyName; 
     }
 
     public void StartGame()
     {
-        if (isInitialized)
+        if (isInitialized && !string.IsNullOrEmpty(selectedDifficultyName))
         {
-            gameManager.StartGame(SelectedDifficulty);
+            gameManager.StartGame(selectedDifficultyName);
         }
     }
 
@@ -91,6 +96,8 @@ public class GameUIViewModel : MonoBehaviour
             GameEvents.InvokeGameStateChanged(GameState.MainMenu);
         }
     }
+    
+    
     private void OnDestroy()
     {
         if (model != null)

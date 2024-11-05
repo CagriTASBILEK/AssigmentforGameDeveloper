@@ -96,7 +96,7 @@ public class AudioManager : MonoBehaviour
         PlaySound(audioLibrary.gameOver);
     }
 
-    public void PlayGameStart(GameDifficulty difficulty)
+    public void PlayGameStart(string difficultyName, GameDifficulty difficulty)
     {
         PlaySound(audioLibrary.gameStart);
     }

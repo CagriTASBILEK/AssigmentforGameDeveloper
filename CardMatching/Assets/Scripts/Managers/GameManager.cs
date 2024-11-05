@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool enableDebugLogs = false;
 
     [SerializeField] private GameState currentGameState;
+    private string currentDifficultyName;
     private GameDifficulty currentDifficulty;
     private Card[] activeCards;
     private Card firstSelectedCard;
@@ -70,34 +71,20 @@ public class GameManager : MonoBehaviour
         GameEvents.OnCardSelected -= HandleCardSelection;
     }
 
-    public void StartGame(GameDifficulty difficulty)
+    public void StartGame(string difficultyName)
     {
         CleanupGame();
         
-        currentDifficulty = difficulty;
-        
+        currentDifficultyName = difficultyName;
+        var gridConfig = gameConfig.GetGridConfig(difficultyName);
+        if (gridConfig == null) return;
 
-        activeCards = cardSpawner.SpawnCards(difficulty);
+        currentDifficulty = gridConfig.difficulty;
+        activeCards = cardSpawner.SpawnCards(gridConfig);
         SetGameState(GameState.Playing);
-        GameEvents.InvokeGameStarted(difficulty);
+        GameEvents.InvokeGameStarted(difficultyName, currentDifficulty);
         
-        DebugLog($"Game started with difficulty: {difficulty}");
-    }
-
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.A))
-        {
-            StartGame(GameDifficulty.Easy);
-        }
-        if (Input.GetKey(KeyCode.B))
-        {
-            StartGame(GameDifficulty.Medium);
-        }
-        if (Input.GetKey(KeyCode.C))
-        {
-            StartGame(GameDifficulty.Hard);
-        }
+        DebugLog($"Game started with difficulty: {difficultyName}");
     }
     
     private void HandleCardSelection(Card selectedCard)
@@ -297,9 +284,10 @@ public class GameManager : MonoBehaviour
         UnsubscribeFromEvents();
     }
     
+    public string GetCurrentDifficultyName() => currentDifficultyName;
+    public GameDifficulty GetCurrentDifficulty() => currentDifficulty;
     public int GetCurrentScore() => currentScore;
     public int GetCurrentCombo() => currentCombo;
-    public GameDifficulty GetCurrentDifficulty() => currentDifficulty;
     
     [Header("Debug Buttons")]
     [SerializeField] private bool resetScores;

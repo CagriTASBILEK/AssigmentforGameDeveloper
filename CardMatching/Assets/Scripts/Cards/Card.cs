@@ -96,5 +96,41 @@ public class Card : MonoBehaviour
         isMatched = true;
         isInteractable = false;
         cardCollider.enabled = false;
+        StartCoroutine(FadeOutCard());
     }
+    private IEnumerator FadeOutCard()
+    {
+        float duration = 0.5f; 
+        float elapsed = 0f;
+        
+        Color frontColor = frontRenderer.color;
+        Color backColor = backRenderer.color;
+        
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float normalizedTime = elapsed / duration;
+            
+            
+            float alpha = 1f - Mathf.SmoothStep(0f, 1f, normalizedTime);
+            
+            
+            frontColor.a = alpha;
+            backColor.a = alpha;
+            
+            frontRenderer.color = frontColor;
+            backRenderer.color = backColor;
+            
+            yield return null;
+        }
+        
+        gameObject.SetActive(false);
+        frontColor.a = 1;
+        backColor.a = 1;
+        frontRenderer.color = frontColor;
+        backRenderer.color = backColor;
+    }
+
+    
+    
 }

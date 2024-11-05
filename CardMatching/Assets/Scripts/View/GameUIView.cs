@@ -70,6 +70,11 @@ public class GameUIView : MonoBehaviour
         
         difficultyDropdown.AddOptions(options);
         difficultyDropdown.value = 0;
+        
+        if (viewModel.DifficultyConfigs.Length > 0)
+        {
+            viewModel.SetSelectedDifficulty(viewModel.DifficultyConfigs[0].difficultyName);
+        }
 
         
         startGameButton.onClick.AddListener(viewModel.StartGame);
@@ -99,7 +104,8 @@ public class GameUIView : MonoBehaviour
     {
         if (index >= 0 && index < viewModel.DifficultyConfigs.Length)
         {
-            viewModel.SelectedDifficulty = viewModel.DifficultyConfigs[index].difficulty;
+            var selectedConfig = viewModel.DifficultyConfigs[index];
+            viewModel.SetSelectedDifficulty(selectedConfig.difficultyName);
         }
     }
 

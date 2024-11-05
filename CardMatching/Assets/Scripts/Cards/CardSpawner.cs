@@ -18,13 +18,13 @@ public class CardSpawner : MonoBehaviour
         gameConfig = config;
     }
 
-    public Card[] SpawnCards(GameDifficulty difficulty)
+    public Card[] SpawnCards(GameConfig.GridConfig gridConfig)
     {
         if(activeCards != null)
         {
             cardFactory.ReturnAllCards();
         }
-        GameConfig.GridConfig gridConfig = gameConfig.GetGridConfig(difficulty);
+
         int totalCards = gridConfig.rows * gridConfig.columns;
         int pairCount = totalCards / 2;
 

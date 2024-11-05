@@ -4,7 +4,7 @@ public static class GameEvents
 {
     
     public static event Action<GameState> OnGameStateChanged;
-    public static event Action<GameDifficulty> OnGameStarted;
+    public static event Action<string, GameDifficulty> OnGameStarted;
     public static event Action OnGamePaused;
     public static event Action OnGameResumed;
     public static event Action OnGameOver;
@@ -23,10 +23,11 @@ public static class GameEvents
         OnGameStateChanged?.Invoke(state);
     }
 
-    public static void InvokeGameStarted(GameDifficulty difficulty)
+    public static void InvokeGameStarted(string difficultyName, GameDifficulty difficulty)
     {
-        OnGameStarted?.Invoke(difficulty);
+        OnGameStarted?.Invoke(difficultyName, difficulty);
     }
+
 
     public static void InvokeGamePaused()
     {

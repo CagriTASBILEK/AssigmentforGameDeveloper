@@ -78,6 +78,14 @@ public class CardSpawner : MonoBehaviour
         }
     }
 
+    public void ReturnAllCards()
+    {
+        if (cardFactory != null)
+        {
+            cardFactory.ReturnAllCards();
+            activeCards = null;
+        }
+    }
     private void OnDestroy()
     {
         if(activeCards != null)

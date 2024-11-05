@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool enableDebugLogs = false;
 
-    private GameState currentGameState;
+    [SerializeField] private GameState currentGameState;
     private GameDifficulty currentDifficulty;
     private Card[] activeCards;
     private Card firstSelectedCard;
@@ -72,20 +72,14 @@ public class GameManager : MonoBehaviour
 
     public void StartGame(GameDifficulty difficulty)
     {
-        if (currentGameState != GameState.MainMenu && currentGameState != GameState.GameOver)
-            return;
-
+        CleanupGame();
+        
         currentDifficulty = difficulty;
-        currentScore = 0;
-        currentCombo = 0;
-        lastMatchTime = 0f;
-        isProcessingMatch = false;
-        firstSelectedCard = null;
+        
 
         activeCards = cardSpawner.SpawnCards(difficulty);
         SetGameState(GameState.Playing);
         GameEvents.InvokeGameStarted(difficulty);
-        GameEvents.InvokeScoreChanged(currentScore);
         
         DebugLog($"Game started with difficulty: {difficulty}");
     }
@@ -255,6 +249,29 @@ public class GameManager : MonoBehaviour
             GameEvents.InvokeGameResumed();
         }
     }
+    public void CleanupGame()
+    {
+        
+        if (cardSpawner != null)
+        {
+            cardSpawner.ReturnAllCards();
+            activeCards = null;
+        }
+
+        
+        currentScore = 0;
+        currentCombo = 0;
+        lastMatchTime = 0f;
+        isProcessingMatch = false;
+        firstSelectedCard = null;
+
+        
+        GameEvents.InvokeScoreChanged(currentScore);
+        GameEvents.InvokeComboChanged(currentCombo);
+        SetGameState(GameState.MainMenu);
+    }
+
+    
 
     private void SetGameState(GameState newState)
     {

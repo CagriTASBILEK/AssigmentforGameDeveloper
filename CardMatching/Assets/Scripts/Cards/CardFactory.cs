@@ -1,29 +1,57 @@
 using UnityEngine;
 
 
-
 public class CardFactory : MonoBehaviour
 {
     [SerializeField] private Card cardPrefab;
     [SerializeField] private CardData[] availableCards;
-    [SerializeField] private Transform cardParent;
-    
+    [SerializeField] private Transform cardContainer;
     private ObjectPool<Card> cardPool;
-    private System.Random random;
+
     private void Awake()
     {
-        random = new System.Random();
+        if (cardPrefab == null)
+        {
+            Debug.LogError("Card prefab is not assigned to CardFactory!");
+            return;
+        }
+
+        if (cardContainer == null)
+        {
+            cardContainer = new GameObject("CardContainer").transform;
+        }
+
+        LoadCardData();
         InitializePool();
     }
-    
+
+    private void LoadCardData()
+    {
+        availableCards = Resources.LoadAll<CardData>("Cards");
+
+        if (availableCards == null || availableCards.Length == 0)
+        {
+            Debug.LogError("No card data found in Resources/Cards folder!");
+        }
+    }
+
     private void InitializePool()
     {
-        int maxPoolSize = 36;
-        cardPool = new ObjectPool<Card>(cardPrefab, maxPoolSize, cardParent);
+        int maxPoolSize = 64;
+        cardPool = new ObjectPool<Card>(cardPrefab, maxPoolSize, cardContainer);
     }
+
     public Card[] CreateCards(int pairCount)
     {
+        if (pairCount * 2 > 36)
+        {
+            Debug.LogError("Requested pair count exceeds maximum pool size!");
+            return null;
+        }
+
         CardData[] selectedPairs = SelectRandomPairs(pairCount);
+        if (selectedPairs == null) return null;
+
         Card[] cards = new Card[pairCount * 2];
 
         for (int i = 0; i < cards.Length; i++)
@@ -35,46 +63,48 @@ public class CardFactory : MonoBehaviour
             }
         }
 
-        ShuffleCards(cards);
         return cards;
     }
 
     private CardData[] SelectRandomPairs(int pairCount)
     {
+        if (pairCount > availableCards.Length)
+        {
+            Debug.LogError(
+                $"Not enough card types! Requested {pairCount} pairs but only have {availableCards.Length} types.");
+            return null;
+        }
+
         CardData[] selectedCards = new CardData[pairCount * 2];
         bool[] usedIndices = new bool[availableCards.Length];
         int selectedPairs = 0;
+        System.Random random = new System.Random();
 
         while (selectedPairs < pairCount)
         {
             int randomIndex = random.Next(0, availableCards.Length);
-            
+
             if (!usedIndices[randomIndex])
             {
                 selectedCards[selectedPairs * 2] = availableCards[randomIndex];
                 selectedCards[selectedPairs * 2 + 1] = availableCards[randomIndex];
-                
                 usedIndices[randomIndex] = true;
                 selectedPairs++;
             }
         }
 
+
+        for (int i = selectedCards.Length - 1; i > 0; i--)
+        {
+            int j = random.Next(i + 1);
+            CardData temp = selectedCards[i];
+            selectedCards[i] = selectedCards[j];
+            selectedCards[j] = temp;
+        }
+
         return selectedCards;
     }
-
-    private void ShuffleCards(Card[] cards)
-    {
-        int n = cards.Length;
-        while (n > 1)
-        {
-            n--;
-            int k = random.Next(n + 1);
-            Card temp = cards[k];
-            cards[k] = cards[n];
-            cards[n] = temp;
-        }
-    }
-
+    
     public void ReturnCard(Card card)
     {
         if (card != null)
@@ -82,7 +112,6 @@ public class CardFactory : MonoBehaviour
             cardPool.Return(card);
         }
     }
-
     public void ReturnAllCards()
     {
         cardPool.ReturnAll();

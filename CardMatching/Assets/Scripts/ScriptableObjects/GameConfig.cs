@@ -19,7 +19,7 @@ public class GameConfig : ScriptableObject
     public float matchCheckDelay = 1f;
     public int baseScore = 100;
     public float comboMultiplier = 1.5f;
-
+    public float maxComboTime = 5f;
     public GridConfig GetGridConfig(GameDifficulty difficulty)
     {
         for(int i = 0; i < gridConfigs.Length; i++)

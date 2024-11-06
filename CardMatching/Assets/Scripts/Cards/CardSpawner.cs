@@ -3,12 +3,15 @@ using UnityEngine;
 
 namespace Cards
 {
+    /// <summary>
+    /// Handles card spawning and positioning in the game grid
+    /// </summary>
     public class CardSpawner : MonoBehaviour
     {
         [SerializeField] private CardFactory cardFactory;
         private GameConfig gameConfig;
         private Card[] activeCards;
-
+        
         public void Initialize(GameConfig config)
         {
             if(config == null)
@@ -19,6 +22,7 @@ namespace Cards
             gameConfig = config;
         }
 
+        // Spawn cards based on grid configuration
         public Card[] SpawnCards(GameConfig.GridConfig gridConfig)
         {
             if(activeCards != null)
@@ -37,15 +41,18 @@ namespace Cards
             return activeCards;
         }
 
+        // Position cards in a grid layout
         private void PositionCards(Card[] cards, GameConfig.GridConfig gridConfig)
         {
             int rows = gridConfig.rows;
             int columns = gridConfig.columns;
             float cardSpacing = gridConfig.cardSpacing; 
         
+            // Calculate grid center
             float gridCenterX = (columns - 1) * cardSpacing / 2f;
             float gridCenterY = (rows - 1) * cardSpacing / 2f;
         
+            // Position each card
             for (int row = 0; row < rows; row++)
             {
                 for (int col = 0; col < columns; col++)
@@ -65,6 +72,8 @@ namespace Cards
             }
             CenterCameraOnGrid(rows, columns, cardSpacing);
         }
+
+        // Adjust camera to fit grid
         private void CenterCameraOnGrid(int rows, int columns, float cardSpacing)
         {
             Camera mainCamera = Camera.main;
@@ -78,7 +87,7 @@ namespace Cards
                 mainCamera.transform.position = new Vector3(0, 0, -10);
             }
         }
-
+        
         public void ReturnAllCards()
         {
             if (cardFactory != null)
@@ -87,6 +96,7 @@ namespace Cards
                 activeCards = null;
             }
         }
+
         private void OnDestroy()
         {
             if(activeCards != null)

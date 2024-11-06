@@ -1,5 +1,8 @@
 namespace Commands
 {
+    /// <summary>
+    /// Manages command execution and history for undo operations
+    /// </summary>
     public class CommandInvoker
     {
         private IGameCommand[] commandHistory;
@@ -8,17 +11,20 @@ namespace Commands
 
         public CommandInvoker()
         {
+            // Initialize command history
             commandHistory = new IGameCommand[MAX_COMMANDS];
             currentIndex = 0;
         }
 
+        // Execute and store command
         public void ExecuteCommand(IGameCommand command)
         {
             command.Execute();
             commandHistory[currentIndex] = command;
-            currentIndex = (currentIndex + 1) % MAX_COMMANDS;
+            currentIndex = (currentIndex + 1) % MAX_COMMANDS; // Circular buffer
         }
 
+        // Undo last executed command
         public void UndoLastCommand()
         {
             if (currentIndex > 0)
@@ -33,6 +39,7 @@ namespace Commands
             }
         }
 
+        // Clear command history
         public void ClearHistory()
         {
             for (int i = 0; i < MAX_COMMANDS; i++)

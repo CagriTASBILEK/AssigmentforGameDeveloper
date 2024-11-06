@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Managers
 {
+    /// <summary>
+    /// Core game manager handling game state and card mechanics
+    /// </summary>
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
@@ -74,7 +77,7 @@ namespace Managers
         {
             GameEvents.OnCardSelected -= HandleCardSelection;
         }
-
+        
         public void StartGame(string difficultyName)
         {
             CleanupGame();
@@ -90,7 +93,7 @@ namespace Managers
         
             DebugLog($"Game started with difficulty: {difficultyName}");
         }
-    
+        
         private void HandleCardSelection(Card selectedCard)
         {
             if (currentGameState != GameState.Playing || isProcessingMatch)

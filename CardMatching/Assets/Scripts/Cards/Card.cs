@@ -5,8 +5,12 @@ using UnityEngine;
 
 namespace Cards
 { 
+    /// <summary>
+    /// Represents a single card in the memory game with flip and match mechanics
+    /// </summary>
     public class Card : MonoBehaviour
     {
+        [Header("Card Renderers")]
         [SerializeField] private SpriteRenderer frontRenderer;
         [SerializeField] private SpriteRenderer backRenderer;
         [SerializeField] private BoxCollider2D cardCollider;
@@ -16,7 +20,7 @@ namespace Cards
         private bool isMatched;
         private bool isInteractable;
         private Coroutine flipCoroutine;
-    
+        
         public string CardId => cardData.id;
         public bool IsRevealed => isRevealed;
         public bool IsMatched => isMatched;
@@ -27,6 +31,10 @@ namespace Cards
             if (cardCollider == null)
                 cardCollider = GetComponent<BoxCollider2D>();
         }
+
+        /// <summary>
+        /// Initializes the card with the provided card data
+        /// </summary>
         public void Initialize(CardData data)
         {
             cardData = data;
@@ -35,6 +43,9 @@ namespace Cards
             ResetCard();
         }
     
+        /// <summary>
+        /// Resets the card to its initial state
+        /// </summary>
         public void ResetCard()
         {
             isRevealed = false;
@@ -46,7 +57,6 @@ namespace Cards
             cardCollider.enabled = true;
         }
     
-    
         private void OnMouseDown()
         {
             if (isInteractable && !isRevealed && !isMatched)
@@ -55,6 +65,10 @@ namespace Cards
             }
         }
 
+        /// <summary>
+        /// Initiates the card flip animation
+        /// </summary>
+        /// <param name="reveal">True to show front, false to show back</param>
         public void Flip(bool reveal)
         {
             if(flipCoroutine != null)
@@ -63,6 +77,9 @@ namespace Cards
             flipCoroutine = StartCoroutine(FlipCoroutine(reveal));
         }
 
+        /// <summary>
+        /// Handles the card flip animation
+        /// </summary>
         private IEnumerator FlipCoroutine(bool reveal)
         {
             isInteractable = false;
@@ -77,9 +94,11 @@ namespace Cards
                 elapsed += Time.deltaTime;
                 float progress = elapsed / duration;
             
+                // Use smooth step for more natural animation
                 float smoothProgress = Mathf.SmoothStep(0f, 1f, progress);
                 transform.rotation = Quaternion.Lerp(startRotation, endRotation, smoothProgress);
             
+                // Switch sprites at halfway point
                 if (progress >= 0.5f && isRevealed != reveal)
                 {
                     frontRenderer.gameObject.SetActive(reveal);
@@ -95,7 +114,9 @@ namespace Cards
             flipCoroutine = null;
         }
 
-
+        /// <summary>
+        /// Sets the card as matched and initiates fade out animation
+        /// </summary>
         public void SetMatched()
         {
             isMatched = true;
@@ -103,6 +124,10 @@ namespace Cards
             cardCollider.enabled = false;
             StartCoroutine(FadeOutCard());
         }
+
+        /// <summary>
+        /// Handles the fade out animation for matched cards
+        /// </summary>
         private IEnumerator FadeOutCard()
         {
             float duration = 0.5f; 
@@ -116,10 +141,10 @@ namespace Cards
                 elapsed += Time.deltaTime;
                 float normalizedTime = elapsed / duration;
             
-            
+                // Smooth fade out effect
                 float alpha = 1f - Mathf.SmoothStep(0f, 1f, normalizedTime);
             
-            
+                // Update alpha values
                 frontColor.a = alpha;
                 backColor.a = alpha;
             
@@ -129,14 +154,12 @@ namespace Cards
                 yield return null;
             }
         
+            // Reset colors and disable card
             gameObject.SetActive(false);
             frontColor.a = 1;
             backColor.a = 1;
             frontRenderer.color = frontColor;
             backRenderer.color = backColor;
         }
-
-    
-    
     }
 }

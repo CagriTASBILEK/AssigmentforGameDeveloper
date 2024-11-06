@@ -4,6 +4,9 @@ using Utilities;
 
 namespace Cards
 {
+    /// <summary>
+    /// Manages card creation and pooling for the memory game
+    /// </summary>
     public class CardFactory : MonoBehaviour
     {
         [SerializeField] private Card cardPrefab;
@@ -30,6 +33,7 @@ namespace Cards
 
         private void LoadCardData()
         {
+            // Load all card data from Resources folder
             availableCards = Resources.LoadAll<CardData>("Cards");
 
             if (availableCards == null || availableCards.Length == 0)
@@ -44,6 +48,9 @@ namespace Cards
             cardPool = new ObjectPool<Card>(cardPrefab, maxPoolSize, cardContainer);
         }
 
+        /// <summary>
+        /// Creates pairs of cards for the game
+        /// </summary>
         public Card[] CreateCards(int pairCount)
         {
             if (pairCount * 2 > 100)
@@ -57,6 +64,7 @@ namespace Cards
 
             Card[] cards = new Card[pairCount * 2];
 
+            // Initialize cards with selected pairs
             for (int i = 0; i < cards.Length; i++)
             {
                 cards[i] = cardPool.Get();
@@ -80,6 +88,7 @@ namespace Cards
             CardData[] selectedCards = new CardData[pairCount * 2];
             System.Random random = new System.Random();
         
+            // Fill pairs sequentially first
             int currentIndex = 0;
             for (int i = 0; i < availableCards.Length && currentIndex < pairCount; i++)
             {
@@ -88,6 +97,7 @@ namespace Cards
                 currentIndex++;
             }
         
+            // Fill remaining pairs randomly
             for (int i = currentIndex; i < pairCount; i++)
             {
                 int randomIndex = random.Next(0, availableCards.Length);
@@ -97,7 +107,7 @@ namespace Cards
                 selectedCards[i * 2 + 1] = randomCard;
             }
 
-        
+            // Shuffle all cards
             for (int i = selectedCards.Length - 1; i > 0; i--)
             {
                 int j = random.Next(i + 1);
@@ -108,7 +118,7 @@ namespace Cards
 
             return selectedCards;
         }
-    
+        
         public void ReturnCard(Card card)
         {
             if (card != null)
@@ -116,6 +126,7 @@ namespace Cards
                 cardPool.Return(card);
             }
         }
+
         public void ReturnAllCards()
         {
             cardPool.ReturnAll();

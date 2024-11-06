@@ -1,5 +1,8 @@
-public interface IGameCommand
+namespace Commands
 {
-    void Execute();
-    void Undo();
+    public interface IGameCommand
+    {
+        void Execute();
+        void Undo();
+    }
 }

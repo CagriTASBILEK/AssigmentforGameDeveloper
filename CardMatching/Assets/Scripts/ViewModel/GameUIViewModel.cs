@@ -1,110 +1,117 @@
 using System;
 using System.Collections;
+using Events;
+using Managers;
+using Model;
+using ScriptableObjects;
 using UnityEngine;
 
-public class GameUIViewModel : MonoBehaviour
+namespace ViewModel
 {
-    private GameUIModel model;
-    private GameManager gameManager;
-    private bool isInitialized;
-    
-    public event Action<int> OnScoreUpdated;
-    public event Action<int> OnComboUpdated;
-    public event Action<GameState> OnGameStateChanged;
-    public event Action OnInitialized;
-    
-    public GameConfig.GridConfig[] DifficultyConfigs => model.GameConfig.gridConfigs;
-    public int HighScore => model?.HighScore ?? 0;
-    public int TotalScore => model?.TotalScore ?? 0;
-    
-    private string selectedDifficultyName;
-    private GameDifficulty selectedDifficulty;
-    
-    public void SetSelectedDifficulty(string difficultyName)
+    public class GameUIViewModel : MonoBehaviour
     {
-        selectedDifficultyName = difficultyName;
-        var config = model?.GameConfig.GetGridConfig(difficultyName);
-        if (config != null)
+        private GameUIModel model;
+        private GameManager gameManager;
+        private bool isInitialized;
+    
+        public event Action<int> OnScoreUpdated;
+        public event Action<int> OnComboUpdated;
+        public event Action<GameState> OnGameStateChanged;
+        public event Action OnInitialized;
+    
+        public GameConfig.GridConfig[] DifficultyConfigs => model.GameConfig.gridConfigs;
+        public int HighScore => model?.HighScore ?? 0;
+        public int TotalScore => model?.TotalScore ?? 0;
+    
+        private string selectedDifficultyName;
+        private GameDifficulty selectedDifficulty;
+    
+        public void SetSelectedDifficulty(string difficultyName)
         {
-            selectedDifficulty = config.difficulty;
+            selectedDifficultyName = difficultyName;
+            var config = model?.GameConfig.GetGridConfig(difficultyName);
+            if (config != null)
+            {
+                selectedDifficulty = config.difficulty;
+            }
         }
-    }
-    private void Start()
-    {
-        StartCoroutine(InitializeWhenReady());
-    }
-    private IEnumerator InitializeWhenReady()
-    {
-        while (GameManager.Instance == null || GameManager.Instance.Config == null)
+        private void Start()
         {
-            yield return new WaitForSeconds(0.5f);
+            StartCoroutine(InitializeWhenReady());
         }
+        private IEnumerator InitializeWhenReady()
+        {
+            while (GameManager.Instance == null || GameManager.Instance.Config == null)
+            {
+                yield return new WaitForSeconds(0.5f);
+            }
         
-        model = new GameUIModel();
-        if (model.Initialize())
-        {
-            gameManager = GameManager.Instance;
-            SubscribeToEvents();
-            isInitialized = true;
-            OnInitialized?.Invoke();
+            model = new GameUIModel();
+            if (model.Initialize())
+            {
+                gameManager = GameManager.Instance;
+                SubscribeToEvents();
+                isInitialized = true;
+                OnInitialized?.Invoke();
+            }
+            else
+            {
+                Debug.LogError("Failed to initialize GameUIModel");
+            }
         }
-        else
-        {
-            Debug.LogError("Failed to initialize GameUIModel");
-        }
-    }
 
-    private void SubscribeToEvents()
-    {
-        GameEvents.OnScoreChanged += score => OnScoreUpdated?.Invoke(score);
-        GameEvents.OnComboChanged += combo => OnComboUpdated?.Invoke(combo);
-        GameEvents.OnGameStateChanged += state => OnGameStateChanged?.Invoke(state);
-    }
+        private void SubscribeToEvents()
+        {
+            GameEvents.OnScoreChanged += score => OnScoreUpdated?.Invoke(score);
+            GameEvents.OnComboChanged += combo => OnComboUpdated?.Invoke(combo);
+            GameEvents.OnGameStateChanged += state => OnGameStateChanged?.Invoke(state);
+        }
 
-    public string GetDifficultyText(GameConfig.GridConfig config)
-    {
-        return config.difficultyName; 
-    }
+        public string GetDifficultyText(GameConfig.GridConfig config)
+        {
+            return config.difficultyName; 
+        }
 
-    public void StartGame()
-    {
-        if (isInitialized && !string.IsNullOrEmpty(selectedDifficultyName))
+        public void StartGame()
         {
-            gameManager.StartGame(selectedDifficultyName);
+            if (isInitialized && !string.IsNullOrEmpty(selectedDifficultyName))
+            {
+                gameManager.StartGame(selectedDifficultyName);
+            }
         }
-    }
 
-    public void PauseGame()
-    {
-        if (isInitialized)
+        public void PauseGame()
         {
-            gameManager.PauseGame();
+            if (isInitialized)
+            {
+                gameManager.PauseGame();
+            }
         }
-    }
-    public void ResumeGame()
-    {
-        if (isInitialized)
+        public void ResumeGame()
         {
-            gameManager.ResumeGame();
+            if (isInitialized)
+            {
+                gameManager.ResumeGame();
+            }
         }
-    }
-    public void ReturnToMainMenu()
-    {
-        if (isInitialized && gameManager != null)
+        public void ReturnToMainMenu()
         {
-            gameManager.CleanupGame();
-            GameEvents.InvokeGameStateChanged(GameState.MainMenu);
+            if (isInitialized && gameManager != null)
+            {
+                gameManager.CleanupGame();
+                GameEvents.InvokeGameStateChanged(GameState.MainMenu);
+            }
         }
-    }
     
     
-    private void OnDestroy()
-    {
-        if (model != null)
+        private void OnDestroy()
         {
-            GameEvents.OnScoreChanged -= score => OnScoreUpdated?.Invoke(score);
-            GameEvents.OnComboChanged -= combo => OnComboUpdated?.Invoke(combo);
-            GameEvents.OnGameStateChanged -= state => OnGameStateChanged?.Invoke(state);
+            if (model != null)
+            {
+                GameEvents.OnScoreChanged -= score => OnScoreUpdated?.Invoke(score);
+                GameEvents.OnComboChanged -= combo => OnComboUpdated?.Invoke(combo);
+                GameEvents.OnGameStateChanged -= state => OnGameStateChanged?.Invoke(state);
+            }
         }
     }
 }
